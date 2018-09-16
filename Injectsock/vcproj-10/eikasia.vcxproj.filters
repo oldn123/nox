@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\rtmp\PacketOrderer.cpp" />
+    <ClCompile Include="..\rtmp\RtmpPacketAggregator.cpp" />
+    <ClCompile Include="..\src\attachs\process_attach.cpp" />
+    <ClCompile Include="..\src\attachs\process_detach.cpp" />
+    <ClCompile Include="..\src\attachs\thread_attach.cpp" />
+    <ClCompile Include="..\src\attachs\thread_detach.cpp" />
+    <ClCompile Include="..\src\eikasia\eikasiacore.cpp" />
+    <ClCompile Include="..\src\modules\Anti Speed Hack\antispeedhack.cpp" />
+    <ClCompile Include="..\src\modules\Anti Winsock Packet Editor\antiwpe.cpp" />
+    <ClCompile Include="..\src\modules\Data Obfuscation\dataobfuscation.cpp" />
+    <ClCompile Include="..\src\modules\Expire Time\expiretime.cpp" />
+    <ClCompile Include="..\src\modules\Mac Address\getmacaddress.cpp" />
+    <ClCompile Include="..\src\modules\md5calc\md5calc.c" />
+    <ClCompile Include="..\src\modules\md5sum\md5.cpp" />
+    <ClCompile Include="..\src\modules\md5sum\md5wrapper.cpp" />
+    <ClCompile Include="..\src\modules\Winsock Hook\winsockhook.cpp" />
+    <ClCompile Include="..\src\modules\Check UserKey\checkuserkey.cpp" />
+    <ClCompile Include="..\src\modules\Crypt\algorithms.cpp" />
+    <ClCompile Include="..\src\modules\Open Url\openurl.cpp" />
+    <ClCompile Include="..\src\modules\AntiBot\antibot.cpp" />
+    <ClCompile Include="..\src\modules\AntiMacro\antimacro.cpp" />
+    <ClCompile Include="..\src\modules\Hardware ID\gethardwareid.cpp" />
+    <ClCompile Include="..\src\modules\Screenshot\screenshot.cpp" />
+    <ClCompile Include="..\src\eikasia.cpp" />
+    <ClCompile Include="..\disasm\cpu.c">
+      <Filter>disasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\disasm\disasm.c">
+      <Filter>disasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\disasm\disasm_x86.c">
+      <Filter>disasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\disasm\misc.c">
+      <Filter>disasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\apihook\mhook.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\rtmp\PacketOrderer.h" />
+    <ClInclude Include="..\rtmp\RtmpPacket.h" />
+    <ClInclude Include="..\rtmp\RtmpPacketAggregator.h" />
+    <ClInclude Include="..\rtmp\RtmpPacketTypeManaged.h" />
+    <ClInclude Include="..\rtmp\RtmpWatcherInterop.h" />
+    <ClInclude Include="..\rtmp\TcpDefinitions.h" />
+    <ClInclude Include="..\rtmp\TcpPacket.h" />
+    <ClInclude Include="..\src\modules\md5calc\md5calc.h" />
+    <ClInclude Include="..\src\modules\md5sum\md5.h" />
+    <ClInclude Include="..\src\modules\md5sum\md5wrapper.h" />
+    <ClInclude Include="..\src\eikasia.h" />
+    <ClInclude Include="..\src\userinfo.h" />
+    <ClInclude Include="..\disasm\cpu.h">
+      <Filter>disasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\disasm\disasm.h">
+      <Filter>disasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\disasm\disasm_x86.h">
+      <Filter>disasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\disasm\disasm_x86_tables.h">
+      <Filter>disasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\disasm\misc.h">
+      <Filter>disasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apihook\mhook.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="disasm">
+      <UniqueIdentifier>{d9167639-28f0-4995-bda8-4ed291b674d2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
