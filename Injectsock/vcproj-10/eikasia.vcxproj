@@ -77,6 +77,7 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">eikn</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">eikn</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -164,8 +165,6 @@
     <ClCompile Include="..\disasm\disasm.c" />
     <ClCompile Include="..\disasm\disasm_x86.c" />
     <ClCompile Include="..\disasm\misc.c" />
-    <ClCompile Include="..\rtmp\PacketOrderer.cpp" />
-    <ClCompile Include="..\rtmp\RtmpPacketAggregator.cpp" />
     <ClCompile Include="..\src\attachs\process_attach.cpp">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
@@ -215,11 +214,6 @@
     <ClInclude Include="..\disasm\disasm_x86.h" />
     <ClInclude Include="..\disasm\disasm_x86_tables.h" />
     <ClInclude Include="..\disasm\misc.h" />
-    <ClInclude Include="..\rtmp\PacketOrderer.h" />
-    <ClInclude Include="..\rtmp\RtmpPacket.h" />
-    <ClInclude Include="..\rtmp\RtmpPacketAggregator.h" />
-    <ClInclude Include="..\rtmp\RtmpPacketTypeManaged.h" />
-    <ClInclude Include="..\rtmp\RtmpWatcherInterop.h" />
     <ClInclude Include="..\rtmp\TcpDefinitions.h" />
     <ClInclude Include="..\rtmp\TcpPacket.h" />
     <ClInclude Include="..\src\modules\md5calc\md5calc.h" />

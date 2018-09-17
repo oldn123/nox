@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\rtmp\PacketOrderer.cpp" />
-    <ClCompile Include="..\rtmp\RtmpPacketAggregator.cpp" />
     <ClCompile Include="..\src\attachs\process_attach.cpp" />
     <ClCompile Include="..\src\attachs\process_detach.cpp" />
     <ClCompile Include="..\src\attachs\thread_attach.cpp" />
@@ -40,11 +38,6 @@
     <ClCompile Include="..\apihook\mhook.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\rtmp\PacketOrderer.h" />
-    <ClInclude Include="..\rtmp\RtmpPacket.h" />
-    <ClInclude Include="..\rtmp\RtmpPacketAggregator.h" />
-    <ClInclude Include="..\rtmp\RtmpPacketTypeManaged.h" />
-    <ClInclude Include="..\rtmp\RtmpWatcherInterop.h" />
     <ClInclude Include="..\rtmp\TcpDefinitions.h" />
     <ClInclude Include="..\rtmp\TcpPacket.h" />
     <ClInclude Include="..\src\modules\md5calc\md5calc.h" />

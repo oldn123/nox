@@ -115,50 +115,6 @@ CwjsApp theApp;
 
 
 
-BOOL RemoteEject(DWORD dwProcessID, HMODULE hModule)
-{
-	BOOL bRetCode = FALSE;
-	HANDLE hProcess = NULL;
-	HANDLE hThread = NULL;
-
-	PTHREAD_START_ROUTINE pfnThreadRoutine;
-
-	do
-	{
-		//获得想要注入代码的进程的句柄
-		hProcess = ::OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwProcessID);
-		if (hProcess == NULL)
-			break;
-
-		//获得LoadLibraryA在Kernel32.dll中的真正地址
-		pfnThreadRoutine = (PTHREAD_START_ROUTINE)::GetProcAddress(GetModuleHandle(TEXT("Kernel32")), "FreeLibraryA");
-		if (pfnThreadRoutine == NULL)
-			break;
-
-		//创建远程线程，并通过远程线程调用用户的DLL文件
-		hThread = ::CreateRemoteThread(hProcess, NULL, 0, pfnThreadRoutine, (LPVOID)hModule, 0, NULL);
-		if (hThread == NULL)
-			break;
-
-		//等待远程线程终止
-		::WaitForSingleObject(hThread, INFINITE);
-	}while(FALSE);
-
-	if (hThread != NULL)
-	{
-		DWORD dwExitCode;
-		::GetExitCodeThread(hThread, &dwExitCode);
-		bRetCode = (BOOL)dwExitCode;
-		::CloseHandle(hThread);
-	}
-	if (hProcess != NULL)
-	{
-		::CloseHandle(hProcess);
-	}
-	return bRetCode;
-}
-
-
 DWORD WINAPI GetIDProcessByName(const char* pszProcessName)
 {
 	DWORD id = 0; 
@@ -184,6 +140,7 @@ DWORD WINAPI GetIDProcessByName(const char* pszProcessName)
 
 DWORD dwId = 0;
 HWND hWndGame = NULL;
+HMODULE g_hMod = NULL;
 DWORD DoInject()
 {
 	// TODO: Add your control notification handler code here
@@ -195,7 +152,7 @@ DWORD DoInject()
 // 			hWndGame = FindWindow("Chrome_WidgetWin_1", NULL);
 // 		}
 
-		dwId = GetIDProcessByName("nox.exe");
+		dwId = GetIDProcessByName("noxdemo.exe");
 
 		if (dwId)
 		{
@@ -209,7 +166,8 @@ DWORD DoInject()
 				CString sName = sFile.Right(sFile.GetLength() - sFile.ReverseFind('\\'));
 				sFile.Replace((LPCTSTR)sName, "\\eikn.dll");
 
-				if(InjectDll(dwId, sFile, LoadLib, ThreadHijacking))
+				g_hMod = InjectDll(dwId, sFile, LoadLib, ThreadHijacking);
+				if(g_hMod)
 				{
 					break;
 				}
@@ -219,6 +177,11 @@ DWORD DoInject()
 		OutputDebugStringA(">>> 注入失败!");
 		//MessageBox(0,"Network connection faild","message",MB_OK);
 	} while (0);
+
+	if (g_hMod)
+	{
+		EjectDll(dwId, g_hMod);
+	}
 
 	return dwId;
 
