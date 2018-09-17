@@ -23,10 +23,11 @@ public:
 // Overrides
 public:
 	virtual BOOL InitInstance();
-
+	
 // Implementation
 
 	DECLARE_MESSAGE_MAP()
+	virtual int ExitInstance();
 };
 
 extern CwjsApp theApp;

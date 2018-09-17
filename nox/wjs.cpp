@@ -1,4 +1,4 @@
-
+ï»¿
 // wjs.cpp : Defines the class behaviors for the application.
 //
 
@@ -36,9 +36,9 @@ using std::string;
 bool sendbuf(char * strData)
 {
 	int sock;
-	//sendtoÖĞÊ¹ÓÃµÄ¶Ô·½µØÖ·
+	//sendtoä¸­ä½¿ç”¨çš„å¯¹æ–¹åœ°å€
 	struct sockaddr_in toAddr;
-	//ÔÚrecvfromÖĞÊ¹ÓÃµÄ¶Ô·½Ö÷»úµØÖ·
+	//åœ¨recvfromä¸­ä½¿ç”¨çš„å¯¹æ–¹ä¸»æœºåœ°å€
 	struct sockaddr_in fromAddr;
 	int fromLen = 0;
 	char recvBuffer[128];
@@ -118,15 +118,15 @@ CwjsApp theApp;
 DWORD WINAPI GetIDProcessByName(const char* pszProcessName)
 {
 	DWORD id = 0; 
-	//»ñµÃÏµÍ³¿ìÕÕ¾ä±ú (Í¨Ë×µÄ½², ¾ÍÊÇµÃµ½µ±Ç°µÄËùÓĞ½ø³Ì) 
+	//è·å¾—ç³»ç»Ÿå¿«ç…§å¥æŸ„ (é€šä¿—çš„è®², å°±æ˜¯å¾—åˆ°å½“å‰çš„æ‰€æœ‰è¿›ç¨‹) 
 	HANDLE hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0) ; 
-	PROCESSENTRY32 pInfo; //ÓÃÓÚ±£´æ½ø³ÌĞÅÏ¢µÄÒ»¸öÊı¾İ½á¹¹ 
+	PROCESSENTRY32 pInfo; //ç”¨äºä¿å­˜è¿›ç¨‹ä¿¡æ¯çš„ä¸€ä¸ªæ•°æ®ç»“æ„ 
 	pInfo.dwSize = sizeof(pInfo); 
-	//´Ó¿ìÕÕÖĞ»ñÈ¡½ø³ÌÁĞ±í 
-	Process32First(hSnapShot, &pInfo) ; //´ÓµÚÒ»¸ö½ø³Ì¿ªÊ¼Ñ­»· 
+	//ä»å¿«ç…§ä¸­è·å–è¿›ç¨‹åˆ—è¡¨ 
+	Process32First(hSnapShot, &pInfo) ; //ä»ç¬¬ä¸€ä¸ªè¿›ç¨‹å¼€å§‹å¾ªç¯ 
 	do 
 	{ 
-		//ÕâÀïµÄ pszProcessName ÎªÄãµÄ½ø³ÌÃû³Æ 
+		//è¿™é‡Œçš„ pszProcessName ä¸ºä½ çš„è¿›ç¨‹åç§° 
 		if(stricmp(strlwr(_strdup(pInfo.szExeFile)), pszProcessName) == 0) 
 		{ 
 			id = pInfo.th32ProcessID ; 
@@ -146,13 +146,13 @@ DWORD DoInject()
 	// TODO: Add your control notification handler code here
 	do 
 	{
-		//hWndGame = FindWindow(NULL, "Î¬¼ÓË¹ - Google Chrome");
+		//hWndGame = FindWindow(NULL, "ç»´åŠ æ–¯ - Google Chrome");
 // 		if (!hWndGame)
 // 		{
 // 			hWndGame = FindWindow("Chrome_WidgetWin_1", NULL);
 // 		}
 
-		dwId = GetIDProcessByName("noxdemo.exe");
+		dwId = GetIDProcessByName("nox.exe");
 
 		if (dwId)
 		{
@@ -174,14 +174,9 @@ DWORD DoInject()
 				dwId = 0;
 			}
 		}
-		OutputDebugStringA(">>> ×¢ÈëÊ§°Ü!");
+		OutputDebugStringA(">>> æ³¨å…¥å¤±è´¥!");
 		//MessageBox(0,"Network connection faild","message",MB_OK);
 	} while (0);
-
-	if (g_hMod)
-	{
-		EjectDll(dwId, g_hMod);
-	}
 
 	return dwId;
 
@@ -196,11 +191,11 @@ CString GetHostbyName(const char * HostName)
 	WSADATA WSAData;
 
 	WSA_return=WSAStartup(0x0202,&WSAData);
-	/* ½á¹¹Ö¸Õë */ 
+	/* ç»“æ„æŒ‡é’ˆ */ 
 	HOSTENT *host_entry;
 	if(WSA_return==0)
 	{
-		/* ¼´Òª½âÎöµÄÓòÃû»òÖ÷»úÃû */
+		/* å³è¦è§£æçš„åŸŸåæˆ–ä¸»æœºå */
 		host_entry=gethostbyname(HostName);
 		if(host_entry!=0)
 		{
@@ -263,7 +258,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		UnregisterHotKey(hWnd, g_nHotKeyID1);
 		UnregisterHotKey(hWnd, g_nHotKeyID2);
 		UnregisterHotKey(hWnd, g_nHotKeyID3);
-		PostQuitMessage(0);//¿ÉÒÔÊ¹GetMessage·µ»Ø0
+		PostQuitMessage(0);//å¯ä»¥ä½¿GetMessageè¿”å›0
 		break;
 	default:
 		break;
@@ -274,10 +269,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 
-
 bool DoCreateWnd(HINSTANCE hInst)
 {
-	//×¢²á´°¿ÚÀà
+	//æ³¨å†Œçª—å£ç±»
 
 	WNDCLASSEX wce = { 0 };
 	wce.cbSize = sizeof(wce);
@@ -305,7 +299,7 @@ bool DoCreateWnd(HINSTANCE hInst)
 	}
 
 
-	//ÏòÏµÍ³×¢²áÈÈ¼ü:ALT+0
+	//å‘ç³»ç»Ÿæ³¨å†Œçƒ­é”®:ALT+0
 
 
 
@@ -386,10 +380,10 @@ BOOL CwjsApp::InitInstance()
 	if(g_dwPid)
 	{
 		MSG msg;
-		while (GetMessage(&msg, NULL, 0, 0))  //»ñÈ¡ÏûÏ¢
+		while (GetMessage(&msg, NULL, 0, 0))  //è·å–æ¶ˆæ¯
 		{
-			TranslateMessage(&msg);    //½«ĞéÄâ¼üÏûÏ¢×ª»»Îª×Ö·ûÏûÏ¢¡£×Ö·ûÏûÏ¢±»·¢ËÍµ½µ÷ÓÃÏß³ÌµÄÏûÏ¢¶ÓÁĞ£¬ÔÚÏÂÒ»´ÎÏß³Ìµ÷ÓÃGetMessage»òPeekMessageº¯ÊıÊ±¶ÁÈ¡
-			DispatchMessage(&msg);     //½«ÏûÏ¢·ÖÅÉ¸ø´°¿Ú¹ı³Ì¡£ËüÍ¨³£ÓÃÓÚ·ÖÅÉÓÉGetMessageº¯Êı¼ìË÷µÄÏûÏ¢¡£
+			TranslateMessage(&msg);    //å°†è™šæ‹Ÿé”®æ¶ˆæ¯è½¬æ¢ä¸ºå­—ç¬¦æ¶ˆæ¯ã€‚å­—ç¬¦æ¶ˆæ¯è¢«å‘é€åˆ°è°ƒç”¨çº¿ç¨‹çš„æ¶ˆæ¯é˜Ÿåˆ—ï¼Œåœ¨ä¸‹ä¸€æ¬¡çº¿ç¨‹è°ƒç”¨GetMessageæˆ–PeekMessageå‡½æ•°æ—¶è¯»å–
+			DispatchMessage(&msg);     //å°†æ¶ˆæ¯åˆ†æ´¾ç»™çª—å£è¿‡ç¨‹ã€‚å®ƒé€šå¸¸ç”¨äºåˆ†æ´¾ç”±GetMessageå‡½æ•°æ£€ç´¢çš„æ¶ˆæ¯ã€‚
 		}
 	}
 #endif
@@ -408,3 +402,14 @@ BOOL CwjsApp::InitInstance()
 	return FALSE;
 }
 
+
+
+int CwjsApp::ExitInstance()
+{
+	// TODO: Add your specialized code here and/or call the base class
+	if (g_hMod)
+	{
+		EjectDll(dwId, g_hMod);
+	}
+	return CWinApp::ExitInstance();
+}
