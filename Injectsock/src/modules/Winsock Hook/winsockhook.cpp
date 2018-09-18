@@ -97,7 +97,11 @@ void SendData(MsgInfo & mi, int nSize)
 {
 	if (sockMsg > 0)
 	{
-		OrigSendTo(sockMsg, (char*)&mi, nSize, 0, (struct sockaddr*)&addr, addr_len);
+		int ret = OrigSendTo(sockMsg, (char*)&mi, nSize, 0, (struct sockaddr*)&addr, addr_len);
+		if (ret == -1)
+		{
+			OutputDebugStringA(">>> 发送数据失败");
+		}
 	}
 }
 
