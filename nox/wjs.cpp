@@ -152,7 +152,8 @@ DWORD DoInject()
 // 			hWndGame = FindWindow("Chrome_WidgetWin_1", NULL);
 // 		}
 
-		dwId = GetIDProcessByName("nox.exe");
+		//dwId = GetIDProcessByName("noxvmhandle.exe");
+		dwId = GetIDProcessByName("notepad.exe");
 
 		if (dwId)
 		{
@@ -352,11 +353,11 @@ BOOL CwjsApp::InitInstance()
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
-	CString sIp = GetHostbyName("qqyonghu888.3322.org");
-	if (sIp != "192.168.1.140")
-	{
-		return FALSE;
-	}
+// 	CString sIp = GetHostbyName("qqyonghu888.3322.org");
+// 	if (sIp != "192.168.1.140")
+// 	{
+// 		return FALSE;
+// 	}
 
 #ifdef TestMode
 

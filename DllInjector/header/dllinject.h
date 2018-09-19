@@ -148,7 +148,24 @@ namespace DllInject
 			return NULL;
 		}
 
+		BOOL b32 = TRUE;
+		if (!IsWow64Process(hProc, &b32))	//判断目标进程是否为32位
+		{
+			CloseHandle(hThread);
+			return NULL;
+		}
+		
+		if (b32)
+		{
+
+		}
+		else
+		{
+
+		}
+
 		CONTEXT ctx;
+		memset(&ctx, 0, 716u);
 		ctx.ContextFlags = CONTEXT_CONTROL;
 		if (!GetThreadContext(hThread, &ctx))
 		{
