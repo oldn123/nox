@@ -26,11 +26,20 @@ using std::string;
 #pragma  comment(lib,"WS2_32.lib")
 
 #include "..\DllInjector\dllinjector.h"
+#ifdef _WIN64
+#ifdef _DEBUG
+#pragma comment(lib, "..\\x64\\debug\\DllInjector.lib")
+#else
+#pragma comment(lib, "..\\x64\\release\\finder.lib")
+#endif
+#else
 #ifdef _DEBUG
 #pragma comment(lib, "..\\debug\\DllInjector.lib")
 #else
 #pragma comment(lib, "..\\release\\finder.lib")
 #endif
+#endif
+
 
 
 bool sendbuf(char * strData)
@@ -167,7 +176,7 @@ DWORD DoInject()
 				CString sName = sFile.Right(sFile.GetLength() - sFile.ReverseFind('\\'));
 				sFile.Replace((LPCTSTR)sName, "\\eikn.dll");
 
-				g_hMod = InjectDll(dwId, sFile, LoadLib, ThreadHijacking);
+				g_hMod = InjectDll(dwId, sFile, LoadLib, /*CreateThreadEx*/ThreadHijacking);
 				if(g_hMod)
 				{
 					break;

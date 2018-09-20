@@ -10,7 +10,7 @@
 #include <fstream>
 #include "..\dllinjector.h"
 
-#pragma comment(lib,"ntdll.lib")
+//#pragma comment(lib,"ntdll.lib")
 #pragma comment(lib, "Advapi32.lib")
 
 #ifdef _WIN64
@@ -19,7 +19,9 @@
 #define IMAGE_FILE_MACHINE IMAGE_FILE_MACHINE_I386
 #endif
 
-extern "C" NTSTATUS NTAPI RtlAdjustPrivilege(ULONG Privilege, BOOLEAN Enable, BOOLEAN CurrentThread, PBOOLEAN Enabled);
+
+typedef int (_stdcall *_RtlAdjustPrivilege)(int, BOOL, BOOL, int *);
+//extern "C" NTSTATUS NTAPI RtlAdjustPrivilege(ULONG Privilege, BOOLEAN Enable, BOOLEAN CurrentThread, PBOOLEAN Enabled);
 
 typedef std::basic_string<TCHAR> inject_string;
 
@@ -120,8 +122,14 @@ namespace DllInject
 	inline HMODULE HijackThread(HANDLE hProc, LPVOID fn, LPVOID arg)
 	{
 		HMODULE hRet = NULL;
-		BOOLEAN bl;
-		RtlAdjustPrivilege(20, 1, 0, &bl);
+		int bl;
+		
+		_RtlAdjustPrivilege fRtlAdjustPrivilege = (_RtlAdjustPrivilege)GetProcAddress(LoadLibraryA("ntdll.dll"), "RtlAdjustPrivilege") ;
+		if (fRtlAdjustPrivilege)
+		{
+			fRtlAdjustPrivilege(20, 1, 0, &bl);
+		}
+		//RtlAdjustPrivilege(20, 1, 0, &bl);
 
 		DWORD ProcessId = GetProcessId(hProc);
 
@@ -148,24 +156,8 @@ namespace DllInject
 			return NULL;
 		}
 
-		BOOL b32 = TRUE;
-		if (!IsWow64Process(hProc, &b32))	//判断目标进程是否为32位
-		{
-			CloseHandle(hThread);
-			return NULL;
-		}
-		
-		if (b32)
-		{
-
-		}
-		else
-		{
-
-		}
-
 		CONTEXT ctx;
-		memset(&ctx, 0, 716u);
+		memset(&ctx, 0, sizeof(CONTEXT));
 		ctx.ContextFlags = CONTEXT_CONTROL;
 		if (!GetThreadContext(hThread, &ctx))
 		{
@@ -199,15 +191,18 @@ namespace DllInject
 
 			0x48, 0x83, 0xEC, 0x20,												// + 0x33			-> sub rsp, 0x20
 			0xFF, 0xD0,															// + 0x37			-> call rax
-			0x48, 0x83, 0xC4, 0x20,												// + 0x39			-> add rsp, 0x20
 
-			0x9D,																// + 0x3D			-> popfq
-			0x41, 0x5B, 0x41, 0x5A, 0x41, 0x59, 0x41, 0x58, 0x5A, 0x59, 0x58,	// + 0x3E			-> pop r(11-8) / r(dca)x
+			0x48, 0xA3, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,			// + 0x39 (* 0x3B)	-> mov qword ptr[0], rax
 
-			0xC6, 0x05, 0xB0, 0xFF, 0xFF, 0xFF, 0x00,							// + 0x49			-> mov byte ptr[$ - 0x49], 0
+			0x48, 0x83, 0xC4, 0x20,												// + 0x43			-> add rsp, 0x20
 
-			0xC3																// + 0x50			-> ret
-		}; // SIZE = 0x51
+			0x9D,																// + 0x47			-> popfq
+			0x41, 0x5B, 0x41, 0x5A, 0x41, 0x59, 0x41, 0x58, 0x5A, 0x59, 0x58,	// + 0x48			-> pop r(11-8) / r(dca)x
+
+			//0xC6, 0x05, 0xB0, 0xFF, 0xFF, 0xFF, 0x00,							// + 0x49			-> mov byte ptr[$ - 0x49], 0
+
+			0xC3																// + 0x53			-> ret
+		}; // SIZE = 0x54
 
 		DWORD dwLoRIP = (DWORD)(ctx.Rip & 0xFFFFFFFF);
 		DWORD dwHiRIP = (DWORD)((ctx.Rip >> 0x20) & 0xFFFFFFFF);
@@ -216,6 +211,7 @@ namespace DllInject
 		*(DWORD*)(Shellcode + 0x0F) = dwHiRIP;
 		*(void**)(Shellcode + 0x21) = fn;
 		*(void**)(Shellcode + 0x2B) = arg;
+		*(void**)(Shellcode + 0x3B) = shellCodeAddress;
 
 		ctx.Rip = (DWORD64)shellCodeAddress;
 
@@ -255,7 +251,7 @@ namespace DllInject
 
 		ctx.Eip = (DWORD)(shellCodeAddress);
 #endif
-		DWORD dwCheckByteSrc = *(LPDWORD)&Shellcode[0];
+		DWORD_PTR dwCheckByteSrc = *(DWORD_PTR*)&Shellcode[0];
 
 		if (!WriteProcessMemory(hProc, shellCodeAddress, Shellcode, sizeof(Shellcode), 0))
 		{
@@ -281,11 +277,11 @@ namespace DllInject
 			return NULL;
 		}
 
-		DWORD dwCheckByte = dwCheckByteSrc;
+		DWORD_PTR dwCheckByte = dwCheckByteSrc;
 		while (true)
 		{
 			dwCheckByte = 0;
-			if(ReadProcessMemory(hProc, shellCodeAddress, &dwCheckByte, sizeof(int), nullptr))
+			if(ReadProcessMemory(hProc, shellCodeAddress, &dwCheckByte, sizeof(DWORD_PTR), nullptr))
 			{
 				if (dwCheckByteSrc != dwCheckByte)
 				{
