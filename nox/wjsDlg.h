@@ -13,7 +13,7 @@ public:
 	CwjsDlg(CWnd* pParent = NULL);	// standard constructor
 
 // Dialog Data
-	enum { IDD = IDD_WJS_DIALOG };
+	//enum { IDD = IDD_WJS_DIALOG };
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support

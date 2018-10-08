@@ -5,8 +5,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DllInjector", "DllInjector\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "eikasia", "Injectsock\vcproj-10\eikasia.vcxproj", "{3A673C91-9437-49F0-8935-CAC7039914A7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "noxdemo", "noxdemo\noxdemo.vcxproj", "{D52EE0D7-E058-4703-8B11-410DABFAB871}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "noxc", "nox\noxc.vcxproj", "{7FB8EEA9-9A6A-4D45-8C99-24F0A4F9CD9B}"
 EndProject
 Global
@@ -41,14 +39,6 @@ Global
 		{3A673C91-9437-49F0-8935-CAC7039914A7}.Release|x64.ActiveCfg = Release|x64
 		{3A673C91-9437-49F0-8935-CAC7039914A7}.Release|x64.Build.0 = Release|x64
 		{3A673C91-9437-49F0-8935-CAC7039914A7}.Release|x86.ActiveCfg = Release|x64
-		{D52EE0D7-E058-4703-8B11-410DABFAB871}.Debug|Win32.ActiveCfg = Debug|Win32
-		{D52EE0D7-E058-4703-8B11-410DABFAB871}.Debug|Win32.Build.0 = Debug|Win32
-		{D52EE0D7-E058-4703-8B11-410DABFAB871}.Debug|x64.ActiveCfg = Debug|Win32
-		{D52EE0D7-E058-4703-8B11-410DABFAB871}.Debug|x86.ActiveCfg = Debug|Win32
-		{D52EE0D7-E058-4703-8B11-410DABFAB871}.Release|Win32.ActiveCfg = Release|Win32
-		{D52EE0D7-E058-4703-8B11-410DABFAB871}.Release|Win32.Build.0 = Release|Win32
-		{D52EE0D7-E058-4703-8B11-410DABFAB871}.Release|x64.ActiveCfg = Release|Win32
-		{D52EE0D7-E058-4703-8B11-410DABFAB871}.Release|x86.ActiveCfg = Release|Win32
 		{7FB8EEA9-9A6A-4D45-8C99-24F0A4F9CD9B}.Debug|Win32.ActiveCfg = Debug|Win32
 		{7FB8EEA9-9A6A-4D45-8C99-24F0A4F9CD9B}.Debug|Win32.Build.0 = Debug|Win32
 		{7FB8EEA9-9A6A-4D45-8C99-24F0A4F9CD9B}.Debug|x64.ActiveCfg = Debug|x64

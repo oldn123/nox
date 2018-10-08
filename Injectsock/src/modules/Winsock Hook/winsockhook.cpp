@@ -19,6 +19,7 @@ using namespace std;
 #include "../../eikasia.h"
 #include "dataDef.h"
 HINSTANCE g_hMod = NULL;
+map<SOCKET, FILE *> g_sMonitorMap;
 
 
 typedef int (WINAPI *PCONNECT)(SOCKET s, const struct sockaddr *address, int namelen);
@@ -93,9 +94,53 @@ SOCKET sockMsg = 0;
 struct sockaddr_in addr;   
 int addr_len = sizeof(struct sockaddr_in);  
 
+
 void SendData(MsgInfo & mi, int nSize)
 {
-	if (sockMsg > 0)
+	if (0)
+	{
+		char sOut[100] = {0};
+		switch(mi.nType)
+		{
+		case eMt_recv:
+			sprintf(sOut, ">>> recv sock:0x%x, size:%d", mi.data.ri.sock, mi.data.ri.nLen);
+			break;
+		case eMt_WSARecv:
+			sprintf(sOut, ">>> WSARecv sock:0x%x, size:%d", mi.data.ri.sock, mi.data.ri.nLen);
+			break;
+		case eMt_recvfrom:
+			sprintf(sOut, ">>> recvfrom sock:0x%x, size:%d", mi.data.ri.sock, mi.data.ri.nLen);
+			break;
+		case eMt_send:
+			sprintf(sOut, ">>> send sock:0x%x, size:%d", mi.data.si.sock, mi.data.si.nLen);
+			break;
+		case eMt_sendto:
+			sprintf(sOut, ">>> sendto sock:0x%x, size:%d", mi.data.si.sock, mi.data.si.nLen);
+			break;
+		case eMt_WSASend:
+			sprintf(sOut, ">>> WSASend sock:0x%x, size:%d", mi.data.si.sock, mi.data.si.nLen);
+			break;
+		}
+
+		if (strlen(sOut) > 0)
+		{
+			OutputDebugStringA(sOut);
+		}
+	}
+
+	if (mi.nType == eMt_recv)
+	{
+		if (g_sMonitorMap.count(mi.data.ri.sock))
+		{
+			fwrite(&mi.data.ri.data, 1, mi.data.ri.nLen, g_sMonitorMap[mi.data.ri.sock]);
+			char sline[16] = {0};
+			memset(sline, 0x88, 16);
+			fwrite(sline, 1, 16, g_sMonitorMap[mi.data.ri.sock]);
+		}
+	}
+	
+
+	if (sockMsg > 0 && 0)
 	{
 		int ret = OrigSendTo(sockMsg, (char*)&mi, nSize, 0, (struct sockaddr*)&addr, addr_len);
 		if (ret == -1)
@@ -133,14 +178,6 @@ bool ReplaceBuf(char * pSrcBuf, char * strFind, char * strRep)
 SYSTEMTIME st;
 
 //===========================Socket===========================
-SOCKET WINAPI MySocket(int af, int type, int protocol) {
-	return OrigSocket(af, type, protocol);
-}
-
-int WINAPI MyClosesocket (SOCKET s) {
-	int nret = OrigClosesocket(s);
-	return nret;
-}
 /*
 int WINAPI MySprintf (char *_Dest, const char *_Format, ...) {
 
@@ -190,10 +227,6 @@ void __fastcall MyHotKey(int key_num) {
 //===========================SEND===========================
 int WINAPI __stdcall MySend(SOCKET s, const char* buf, int len, int flags)
 {
-	char stext[80] = {0};
-	sprintf(stext, ">>> send: %d\n", len);
-	OutputDebugStringA(stext);
-
 	char * pData = new char[len + sizeof(MsgInfo)];
 	MsgInfo & mi = *(MsgInfo*)pData;
 	mi.nType = eMt_send;
@@ -211,10 +244,6 @@ int WINAPI __stdcall MySend(SOCKET s, const char* buf, int len, int flags)
 //===========================WSASEND===========================
 int WINAPI __stdcall MyWSASend(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesSent, LPDWORD lpFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
 {
-	char stext[80] = {0};
-	sprintf(stext, ">>> wsaSend: %d\n", dwBufferCount );
-	OutputDebugStringA(stext);
-
 	char * pData = new char[dwBufferCount + sizeof(MsgInfo)];
 	MsgInfo & mi = *(MsgInfo*)pData;
 	mi.nType = eMt_WSASend;
@@ -232,10 +261,6 @@ int WINAPI __stdcall MyWSASend(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount
 //===========================SENDTO===========================
 int WINAPI __stdcall MySendTo(SOCKET s, const char *buf, int len, int flags, const struct sockaddr *to, int tolen)
 {
-	char stext[80] = {0};
-	sprintf(stext, ">>> sendTo: %d\n", len );
-	OutputDebugStringA(stext);
-
 	char * pData = new char[len + sizeof(MsgInfo)];
 	MsgInfo & mi = *(MsgInfo*)pData;
 	mi.nType = eMt_sendto;
@@ -254,6 +279,14 @@ int WINAPI __stdcall MyRecv(SOCKET s, const char* buf, int len, int flags)
 {
 	int RecvedBytes = 0;
 	RecvedBytes = OrigRecv(s, (char*)buf, len, flags);
+
+	if (g_sMonitorMap.count(s))
+	{
+		char stext[80] = {0};
+		sprintf(stext, ">>> sock:0x%x recv len input: 0x%x, ret:0x%x\n",s, len, RecvedBytes);
+		OutputDebugStringA(stext);
+	}
+
 	if (RecvedBytes > 0)
 	{
 		char * pData = new char[RecvedBytes + sizeof(MsgInfo)];
@@ -293,9 +326,6 @@ int WINAPI __stdcall MyWSARecv(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount
 	int Errors = OrigWSARecv(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd, lpFlags, lpOverlapped, lpCompletionRoutine);
 	if(Errors == SOCKET_ERROR) return Errors;
 
-	char stext[80] = {0};
-	sprintf(stext, ">>> wsaRecv: %d\n", *lpNumberOfBytesRecvd );
-	OutputDebugStringA(stext);
 	int RecvedBytes = *lpNumberOfBytesRecvd;
 	if (RecvedBytes > 0)
 	{
@@ -315,22 +345,50 @@ int WINAPI __stdcall MyWSARecv(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount
 //===========================CONNECT===========================
 int WINAPI __stdcall MyConnect(SOCKET s, const struct sockaddr *address, int namelen)
 {
+	sockaddr_in sin;
+	memcpy(&sin, address, sizeof(sin));
+
 	char stext[80] = {0};
-	sprintf(stext, ">>> connect: %d\n", address->sa_data);
+	sprintf(stext, ">>> sock:0x%x connect: %s:%d\n",s, inet_ntoa(sin.sin_addr), ntohs(sin.sin_port));
 	OutputDebugStringA(stext);
+
+	if (ntohs(sin.sin_port) == 3431)
+	{
+		char sFile[128] = {0};
+		sprintf(sFile, "d:\\data\\%s.dat", inet_ntoa(sin.sin_addr));
+		g_sMonitorMap[s] = fopen(sFile, "wb");
+	}
 
 	int errors = OrigConnect(s, address, namelen);
 	if(errors == SOCKET_ERROR) return errors;
 	return errors;
 }
 
+SOCKET WINAPI MySocket(int af, int type, int protocol) {
+	SOCKET s = OrigSocket(af, type, protocol);
+	char sOut[100] = {0};
+	sprintf(sOut, ">>> +++++++++++ sock-creat:0x%x", s);
+	OutputDebugStringA(sOut);
+	return s;
+}
 
+int WINAPI MyClosesocket (SOCKET s) {
+	char sOut[100] = {0};
+	sprintf(sOut, ">>> ----------- sock-close:0x%x", s);
+	OutputDebugStringA(sOut);
+	if (g_sMonitorMap.count(s))
+	{
+		fclose(g_sMonitorMap[s]);
+		g_sMonitorMap.erase(s);
+	}
+	int nret = OrigClosesocket(s);
+	return nret;
+}
 
 //===========================GETHOSTBYNAME===========================
 int WINAPI __stdcall Mygethostbyname(const char *name)
 {
 	return OrigGethost(name);
-
 }
 
 bool g_bquit = false;

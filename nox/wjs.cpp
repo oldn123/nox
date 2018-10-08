@@ -116,7 +116,7 @@ CwjsApp::CwjsApp()
 
 
 
-//#define TestMode
+#define TestMode
 
 // The one and only CwjsApp object
 
@@ -150,48 +150,6 @@ DWORD WINAPI GetIDProcessByName(const char* pszProcessName)
 DWORD dwId = 0;
 HWND hWndGame = NULL;
 HMODULE g_hMod = NULL;
-DWORD DoInject()
-{
-	// TODO: Add your control notification handler code here
-	do 
-	{
-		//hWndGame = FindWindow(NULL, "维加斯 - Google Chrome");
-// 		if (!hWndGame)
-// 		{
-// 			hWndGame = FindWindow("Chrome_WidgetWin_1", NULL);
-// 		}
-
-		//dwId = GetIDProcessByName("noxvmhandle.exe");
-		dwId = GetIDProcessByName("notepad.exe");
-
-		if (dwId)
-		{
-// 			dwId = 0;
-// 			GetWindowThreadProcessId(hWndGame, &dwId);
-// 			if (dwId != 0)
-			{
-				TCHAR strFile[MAX_PATH] = {0};
-				GetModuleFileName(NULL, strFile, MAX_PATH);
-				CString sFile = strFile;
-				CString sName = sFile.Right(sFile.GetLength() - sFile.ReverseFind('\\'));
-				sFile.Replace((LPCTSTR)sName, "\\eikn.dll");
-
-				g_hMod = InjectDll(dwId, sFile, LoadLib, /*CreateThreadEx*/ThreadHijacking);
-				if(g_hMod)
-				{
-					break;
-				}
-				dwId = 0;
-			}
-		}
-		OutputDebugStringA(">>> 注入失败!");
-		//MessageBox(0,"Network connection faild","message",MB_OK);
-	} while (0);
-
-	return dwId;
-
-	//CDialogEx::OnOK();
-}
 
 
 CString GetHostbyName(const char * HostName)
@@ -328,7 +286,76 @@ bool DoCreateWnd(HINSTANCE hInst)
 	return true;
 }
 
+BOOL CwjsApp::RemoteEject()
+{
+	if (g_hMod)
+	{
+		return EjectDll(g_dwPid, g_hMod);
+	}
+	return FALSE;
+}
 
+//#define GemeTitle "维加斯"
+#define GemeTitle "Asia Game VIP"
+
+DWORD CwjsApp::DoInject()
+{
+	// TODO: Add your control notification handler code here
+	do 
+	{
+		if (hWndGame && !::IsWindow(hWndGame))
+		{
+			hWndGame = NULL;
+		}
+
+		if (!hWndGame)
+		{	
+			CString sTitle = GemeTitle;
+			sTitle += " - Google Chrome";
+			hWndGame = FindWindow(NULL, sTitle);
+		}
+		if(!hWndGame)
+		{
+			CString sTitle = GemeTitle;
+			sTitle += " - 360安全浏览器 8.0";
+			hWndGame = FindWindow(NULL, sTitle);
+		}
+		if(!hWndGame)
+		{
+			CString sTitle = GemeTitle;
+			sTitle += " - 360安全浏览器 8.1";
+			hWndGame = FindWindow(NULL, sTitle);
+		}
+
+		if (hWndGame)
+		{
+			dwId = 0;
+			GetWindowThreadProcessId(hWndGame, &dwId);
+			if (dwId != 0)
+			{
+				TCHAR strFile[MAX_PATH] = {0};
+				GetModuleFileName(NULL, strFile, MAX_PATH);
+				CString sFile = strFile;
+				CString sName = sFile.Right(sFile.GetLength() - sFile.ReverseFind('\\'));
+				sFile.Replace((LPCTSTR)sName, "\\eikn.dll");
+
+				g_hMod = InjectDll(dwId, sFile, LoadLib, ThreadHijacking);
+				if(g_hMod)
+				{
+					g_dwPid = dwId;
+					break;
+				}
+				dwId = 0;
+			}
+		}
+		OutputDebugStringA(">>> 注入失败!");
+		//MessageBox(0,"Network connection faild","message",MB_OK);
+	} while (0);
+
+	return dwId;
+
+	//CDialogEx::OnOK();
+}
 
 // CwjsApp initialization
 

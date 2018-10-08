@@ -20,6 +20,8 @@ class CwjsApp : public CWinApp
 public:
 	CwjsApp();
 
+	static DWORD DoInject();
+	static BOOL RemoteEject();
 // Overrides
 public:
 	virtual BOOL InitInstance();
